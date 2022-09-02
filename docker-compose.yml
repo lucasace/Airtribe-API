@@ -1,0 +1,27 @@
+version: '3.7'
+services:
+  airtribe_api:
+    container_name: airtribe_api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgres://airtribe:password@postgres:5432/airtribe
+      - JWT_TOKEN=secret
+  postgres:
+    container_name: postgresql
+    image: postgres
+    ports:
+      - "5432:5432"
+    volumes: 
+      - ./migrations/db.sql:/docker-entrypoint-initdb.d/db.sql
+      - ./migrations/insert.sql:/docker-entrypoint-initdb.d/insert.sql
+    restart: always
+    environment:
+      - POSTGRES_USER=airtribe
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=airtribe

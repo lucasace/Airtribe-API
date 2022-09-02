@@ -29,6 +29,7 @@ router.get('/', auth, async (req, res) => {
                 rows.rows[i].comments.push(com.comment);
             }
         }
+        client.release();
         res.status(200).send(rows.rows);
     }
     catch(err){
@@ -47,6 +48,7 @@ router.put('/:leadid', auth, async (req, res) => {
         const client = await pool.connect();
         const sql = `UPDATE ENROLLED SET status=$1 WHERE lead_id=${req.params.leadid} AND course_id=${req.params.id}`;
         await client.query(sql, [status]);
+        client.release();
         res.status(200).send('Lead status updated');
     }
     catch(err){
@@ -63,6 +65,7 @@ router.post('/:leadid/comments', auth, async (req, res) => {
         const commentid = await client.query(sql, [comment]);
         sql = `INSERT INTO COMMENTS_ENROLLED VALUES( ${req.params.id}, ${req.params.leadid}, ${commentid.rows[0].id})`;
         await client.query(sql);
+        client.release();
         res.status(200).send('Comment added');
     }
     catch(err){

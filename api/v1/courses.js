@@ -17,6 +17,7 @@ router.get('/', async (req, res) => {
             delete rows.rows[i]['instructor_id'];
             rows.rows[i].instructor = ins_dets;
         }
+        client.release();
         res.status(200).send(rows.rows);
     }
     catch(err){
@@ -39,6 +40,7 @@ router.post('/', auth, async (req, res) => {
         if(!start_date)
             start_date = null;
         await client.query(sql , [name, description, status, start_date, duration, hrs_per_day, price, max_seats, id]);
+        client.release();
         res.status(200).send('Course created');
     }
     catch(err){
@@ -61,6 +63,7 @@ router.put('/:id', auth, async (req, res) => {
         if(!start_date)
             start_date = null;
         await client.query(sql, [name, description, status, start_date, duration, hrs_per_day, price, max_seats, id, req.params.id]);
+        client.release();
         res.status(200).send('Course updated');
     }
     catch(err){
@@ -81,6 +84,7 @@ router.get('/:id', async (req, res) => {
         delete ins_dets['id'];
         delete rows.rows[0]['instructor_id'];
         rows.rows[0].instructor = ins_dets;
+        client.release();
         res.status(200).send(rows.rows[0]);
     }
     catch(err){
@@ -98,6 +102,7 @@ router.post('/:id', auth, async (req, res) => {
         const answerid = await client.query(sql , [name, email, phone, linkedin]);
         sql = `INSERT INTO enrolled VALUES ($1, $2, -1, $3)`;
         await client.query(sql, [req.params.id, id, answerid.rows[0].id]);
+        client.release();
         res.status(200).send('Enrolled Successfully!!');
     }
     catch(err){
