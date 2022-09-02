@@ -1,0 +1,17 @@
+{
+  "name": "airtribe-assignment",
+  "version": "0.1.0",
+  "description": "Solution to the Airtribe Assignment as part of the interview process",
+  "main": "index.js",
+  "author": "lucasace <tauro.royston@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "express": "^4.18.1",
+    "jsonwebtoken": "^8.5.1",
+    "pg": "^8.8.0"
+  }
+}
