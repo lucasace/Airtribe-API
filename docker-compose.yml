@@ -8,7 +8,8 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       - DATABASE_URL=postgres://airtribe:password@postgres:5432/airtribe
       - JWT_TOKEN=secret
@@ -25,3 +26,8 @@ services:
       - POSTGRES_USER=airtribe
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=airtribe
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airtribe"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
