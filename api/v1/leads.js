@@ -33,7 +33,8 @@ router.get('/', auth, async (req, res) => {
         res.status(200).send(rows.rows);
     }
     catch(err){
-        console.log(err);
+        if(err.code == '23503')
+            return res.status(400).send('Course Doesnt Exist');
         res.status(500).send(err);
     }
 });
@@ -46,7 +47,8 @@ router.put('/:leadid', auth, async (req, res) => {
         if(parseInt(status) > 2 || status < 0)
             return res.status(400).send('Bad request. Invalid status.');
         const client = await pool.connect();
-        const sql = `UPDATE ENROLLED SET status=$1 WHERE lead_id=${req.params.leadid} AND course_id=${req.params.id}`;
+        let leadid = parseInt(req.params.leadid.split('User')[1]);
+        const sql = `UPDATE ENROLLED SET status=$1 WHERE lead_id=${leadid} AND course_id=${req.params.id}`;
         await client.query(sql, [status]);
         client.release();
         res.status(200).send('Lead status updated');
@@ -63,7 +65,8 @@ router.post('/:leadid/comments', auth, async (req, res) => {
         const client = await pool.connect();
         var sql = `INSERT INTO comments(comment) VALUES ($1) RETURNING id`;
         const commentid = await client.query(sql, [comment]);
-        sql = `INSERT INTO COMMENTS_ENROLLED VALUES( ${req.params.id}, ${req.params.leadid}, ${commentid.rows[0].id})`;
+        let leadid = parseInt(req.params.leadid.split('User')[1]);
+        sql = `INSERT INTO COMMENTS_ENROLLED VALUES( ${req.params.id}, ${leadid}, ${commentid.rows[0].id})`;
         await client.query(sql);
         client.release();
         res.status(200).send('Comment added');

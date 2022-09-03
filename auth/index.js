@@ -4,10 +4,11 @@ const jwt = require('jsonwebtoken');
 module.exports = (req, res, next) => {
     try{
         let id;
-        if(req.method=='GET' && !req.query.id)
-            return res.status(400).send('Acess denied. Invalid id');
-        else if(req.method=='GET')
-            id = req.query.id;
+        if(req.method == 'GET' && !req.headers.id_token){
+            return res.status(401).send('Unauthorized');
+        } 
+        else if(req.method == 'GET')
+            id = req.headers.id_token;
         else if(!req.body.id)
             return res.status(400).send('Bad request. Missing parameters.');
         else
@@ -24,3 +25,4 @@ module.exports = (req, res, next) => {
         res.status(500).send(err);
     }
 }
+
